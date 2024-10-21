@@ -5,35 +5,39 @@ import { ImageS3Service } from "../../lib/s3Service";
 
 const imageS3Service = new ImageS3Service();
 
+export interface UploadImageData {
+  imageFile: File
+}
+
 export async function GET() {
-  
+
   const images = await imageS3Service.getAllItems();
 
   // Return the images array to the client
   return Response.json(images);
 }
 
-// export async function PUT(req: Request) {
-//   // Retrieve the data from f.e. and upload to bucket
-//   const {
-//     ideaText,
-//     ideaDescription
-//   } = await req.json();
+export async function PUT(req: Request) {
+  // Retrieve the data from f.e. and upload to bucket
+  const formData = await req.formData();
+  const id = formData.get("id")?.valueOf() as string | null;
+  const imageFile = formData.get("imageFile")?.valueOf() as File | null;
+  // console.log({
+  //   id,
+  //   imageFile
+  // });
 
-//   const uniqueObjectKey = `text/${uuidv4()}.json`;
-//   // Create a command to create the object from the bucket
-//   const command = new PutObjectCommand({
-//     Bucket: process.env.BUCKET_NAME,
-//     Key: uniqueObjectKey,
-//     Body: Buffer.from(JSON.stringify({
-//       ideaText,
-//       ideaDescription,
-//     })),
-//     ContentEncoding: 'base64',
-//     ContentType: 'application/json'
-//   });
-  
+  if (id === null || imageFile === null) {
+    console.error('no form id or image file');
+    return Response.json(
+      { message: "no form id or image file" },
+      { status: 400 }
+    );
+  }
 
-//   await S3.send(command);
-//   return Response.json({ message: "ok", id: uniqueObjectKey });
-// }
+  // upload the image file using the imageS3Service and make sure it uses the same id from the formdata
+  await imageS3Service.putItem({
+    imageFile
+  }, id)
+  return Response.json({});
+}

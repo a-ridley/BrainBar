@@ -3,7 +3,7 @@
 import Header from "./components/header";
 import BraindropCard, { BraindropData } from "./components/braindropCard";
 import BrainDropGrid from "./components/braindropGrid";
-import { BrainDropText } from "./api/lib/s3Service";
+import { BrainDropImage, BrainDropText } from "./api/lib/s3Service";
 import { useCallback, useEffect, useState } from "react";
 import BrainDropCreate from "./components/braindropCreateDialog";
 import { Box, Flex } from "@radix-ui/themes";
@@ -24,8 +24,6 @@ export default function Home() {
           date: braindrop.lastModified,
           ideaText: braindrop.ideaText,
           ideaDescription: braindrop.ideaDescription,
-          voiceMemoUrl: "",
-          imgUrl: ""
         }
       }))
     })
@@ -46,7 +44,7 @@ export default function Home() {
         md: "20px"
       }}
     >
-      <Header heading={"BrainBar"} description={"A space to store rap bars and creative ideas."} />
+      <Header heading={"BrainBar"} description={"A space to store your memorable rap bars."} />
       <Flex justify="end">
         <BrainDropCreate onCreate={() => {
           updateListOfBraindrops();
@@ -56,7 +54,9 @@ export default function Home() {
         <BrainDropGrid>
           {
             listOfBraindrops.map(item => {
-              return <BraindropCard key={item.id} data={item} />
+              return <BraindropCard key={item.id} data={item} onUpdate={() => {
+                updateListOfBraindrops();
+              }} />
             })
           }
         </BrainDropGrid>

@@ -4,30 +4,34 @@ import { useEffect, useState } from "react";
 import { BrainDropImage } from "../api/lib/s3Service";
 
 interface BraindropBackProps {
-  ideaDescription: string
+  ideaDescription: string,
+  textKey: string
 }
 
-const getImage = async () => {
+const getImageByKey = async (key: string) => {
   const imageData = await fetch("/api/braindrop/image");
   const imgDataJson = await imageData.json() as BrainDropImage[];
-  return imgDataJson;
+  // need to display the correct image based on id
+
+  return imgDataJson.find(image => image.key === key);
 }
 
 export default function BraindropBack(props: BraindropBackProps) {
-  const [imgDataJson, setImgDataJson] = useState<any[]>([]);
+  const [imgDataJson, setImgDataJson] = useState<BrainDropImage | undefined>(undefined);
 
   useEffect(() => {
-    getImage().then((data) => {
+    const imageKey = props.textKey.replace("text/", "image/");
+    getImageByKey(imageKey).then((data) => {
       setImgDataJson(data)
     })
   }, []);
 
-  console.log({ imgDataJson });
+  // console.log({ imgDataJson });
   return (
     <Box>
       <Inset clip="padding-box" side="top" pb="current">
         <img
-          src={imgDataJson[0]?.url}
+          src={imgDataJson?.url}
           alt="Bold typography"
           className={styles.img}
         />

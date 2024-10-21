@@ -1,6 +1,9 @@
 import { ListObjectsV2Command, GetObjectCommand, S3Client, PutObjectCommand, _Object } from "@aws-sdk/client-s3";
+import { Upload } from "@aws-sdk/lib-storage";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { v4 as uuidv4 } from 'uuid';
+import { UploadImageData } from "../braindrop/image/route";
+
 
 
 // Create an S3 client, which is used to connect to the Tigris bucket
@@ -19,7 +22,6 @@ abstract class BaseS3Service<ExistingItemType, UploadItemType> {
 
   bucketName = process.env.BUCKET_NAME;
   abstract prefixName: string;
-  abstract contentType: string;
 
   async getAllItems(): Promise<ExistingItemType[]> {
     // Create a command to list all objects in the bucket
@@ -53,26 +55,22 @@ abstract class BaseS3Service<ExistingItemType, UploadItemType> {
   }
 
   protected abstract processGetItem(s3Object: _Object): Promise<ExistingItemType>;
-  abstract uploadItem(data: UploadItemType): Promise<string>;
+  abstract putItem(data: UploadItemType, id: string | null): Promise<string>;
 
-  protected async uploadItemInternal(data: Buffer): Promise<string> {
+  protected async putItemInternal(data: Buffer, contentType: string, id: string | null): Promise<string> {
     // INFO: make sure i notice that prefixName is missing slash
-    const uniqueObjectKey = `${this.prefixName}${uuidv4()}.json`;
+    const objectKey = `${this.prefixName}${id ? id : uuidv4()}`;
     // Create a command to create the object from the bucket
     const command = new PutObjectCommand({
       Bucket: this.bucketName,
-      Key: uniqueObjectKey,
+      Key: objectKey,
       Body: data,
       ContentEncoding: 'base64',
-      ContentType: this.contentType
+      ContentType: contentType
     });
 
     await S3.send(command);
-    return uniqueObjectKey;
-  }
-
-  updateItem(): string {
-    return "";
+    return objectKey;
   }
 }
 
@@ -82,13 +80,14 @@ export interface BrainDropImage {
   url: string
 }
 
-export class ImageS3Service extends BaseS3Service<BrainDropImage, Buffer> {
+export class ImageS3Service extends BaseS3Service<BrainDropImage, UploadImageData> {
+
   prefixName: string = 'image/';
   // TODO: Different image types
   contentType: string = 'image/jpeg';
 
   async processGetItem(s3Object: _Object): Promise<BrainDropImage> {
-    console.log({ s3Object });
+    // console.log({ s3Object });
     const imageUrl = await getSignedUrl(S3,
       new GetObjectCommand({
         Bucket: this.bucketName,
@@ -104,8 +103,8 @@ export class ImageS3Service extends BaseS3Service<BrainDropImage, Buffer> {
     }
   }
 
-  uploadItem(data: Buffer): Promise<string> {
-    throw new Error("Method not implemented.");
+  async putItem(file: UploadImageData, id: string | null): Promise<string> {
+    return await this.putItemInternal(Buffer.from(await file.imageFile.arrayBuffer()), file.imageFile.type, id);
   }
 }
 
@@ -142,7 +141,7 @@ export class TextS3Service extends BaseS3Service<BrainDropText, CreateBrainDropT
     };
   }
 
-  async uploadItem(data: CreateBrainDropText): Promise<string> {
-    return await this.uploadItemInternal(Buffer.from(JSON.stringify(data)))
+  async putItem(data: CreateBrainDropText, id: string | null): Promise<string> {
+    return await this.putItemInternal(Buffer.from(JSON.stringify(data)), this.contentType, id);
   }
 }

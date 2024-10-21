@@ -1,31 +1,45 @@
 'use client';
 
-import { Dialog, Flex } from "@radix-ui/themes";
-import BraindropFront from "./braindropFront";
-import React from "react";
+import { Dialog, VisuallyHidden } from "@radix-ui/themes";
+import React, { useState } from "react";
 import { BraindropData } from "./braindropCard";
-import styles from "./brainDropDialog.module.scss";
-import BraindropBack from "./braindropBack";
 import BrainDropEditor from "./braindropEditor";
 
 export default function BrainDropDialog(props: {
   children: React.ReactNode,
   brainDropData: BraindropData,
-  isFlipped: boolean
+  isFlipped: boolean,
+  onUpdate: () => void
 }) {
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
-    <Dialog.Root>
-      <Dialog.Trigger>
+    <Dialog.Root open={isOpen}>
+      <div onClick={() => { setIsOpen(true) }}>
         {props.children}
-      </Dialog.Trigger>
-      <Dialog.Content
-        size="3"
-        height="600px"
-        width="450px"
-      >
-        {/* <Dialog.Title>BrainDrop</Dialog.Title> */}
-        <BrainDropEditor ideaText={props.brainDropData.ideaText} ideaDescription={props.brainDropData.ideaDescription} />
-      </Dialog.Content>
+      </div>
+      <div onClick={(e) => {
+        setIsOpen(false);
+        e.stopPropagation();
+      }}>
+        <Dialog.Content
+          size="3"
+          height="600px"
+          width="450px"
+          aria-describedby="undefied"
+          onClick={e => {
+            e.stopPropagation();
+          }}
+        >
+          <VisuallyHidden>
+            <Dialog.Description />
+          </VisuallyHidden>
+          <VisuallyHidden>
+            <Dialog.Title aria-describedby="undefied" >BrainDrop</Dialog.Title>
+          </VisuallyHidden>
+          <BrainDropEditor data={props.brainDropData} onUpdate={props.onUpdate} />
+        </Dialog.Content>
+      </div>
     </Dialog.Root>
   );
 }

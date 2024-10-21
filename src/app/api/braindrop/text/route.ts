@@ -19,10 +19,25 @@ export async function PUT(req: Request) {
     ideaDescription
   } = await req.json();
 
-  const uniqueObjectKey = await textS3Service.uploadItem({
+  const objectKey = await textS3Service.putItem({
     ideaText,
     ideaDescription
-  });
+  }, null);
 
-  return Response.json({ message: "ok", id: uniqueObjectKey });
+  return Response.json({ message: "ok", id: objectKey });
+}
+
+export async function POST(req: Request) {
+  const {
+    id,
+    ideaText,
+    ideaDescription,
+  } = await req.json();
+
+  const objectKey = await textS3Service.putItem({
+    ideaText,
+    ideaDescription
+  }, id);
+
+  return Response.json({ message: "ok", id: objectKey });
 }
