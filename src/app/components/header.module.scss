@@ -1,0 +1,17 @@
+.root {
+	background-color: black;
+	&[data-orientation="horizontal"] {
+		height: 1px;
+		width: 100%;
+	}
+	&[data-orientation="vertical"] {
+		height: 100%;
+		width: 1px;
+	}
+}
+
+.text {
+	color: black;
+	font-size: 25px;
+	line-height: 20px;
+}
