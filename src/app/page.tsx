@@ -3,7 +3,7 @@
 import Header from "./components/header";
 import BraindropCard, { BraindropData } from "./components/braindropCard";
 import BrainDropGrid from "./components/braindropGrid";
-import { BrainDropImage, BrainDropText } from "./api/lib/s3Service";
+import { BrainDropText } from "./api/lib/s3Service";
 import { useCallback, useEffect, useState } from "react";
 import BrainDropCreate from "./components/braindropCreateDialog";
 import { Box, Flex } from "@radix-ui/themes";

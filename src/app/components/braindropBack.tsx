@@ -11,7 +11,6 @@ interface BraindropBackProps {
 const getImageByKey = async (key: string) => {
   const imageData = await fetch("/api/braindrop/image");
   const imgDataJson = await imageData.json() as BrainDropImage[];
-  // need to display the correct image based on id
 
   return imgDataJson.find(image => image.key === key);
 }

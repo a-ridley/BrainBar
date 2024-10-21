@@ -1,3 +1,5 @@
+import { BrainDropImage } from "../api/lib/s3Service";
+
 export const uploadBrainDropImage = async (textId: string, file: File) => {
   const braindropId = textId.split('/')[1].split('.')[0] // get id from text/{id}.json
   const formData = new FormData();
@@ -7,4 +9,11 @@ export const uploadBrainDropImage = async (textId: string, file: File) => {
   await fetch("/api/braindrop/image", {
     method: "PUT", body: formData
   });
+}
+
+export const getImageByKey = async (key: string) => {
+  const imageData = await fetch("/api/braindrop/image");
+  const imgDataJson = await imageData.json() as BrainDropImage[];
+
+  return imgDataJson.find(image => image.key === key);
 }

@@ -20,13 +20,12 @@ export default function BrainDropDialog(props: {
       </div>
       <div onClick={(e) => {
         setIsOpen(false);
-        e.stopPropagation();
       }}>
         <Dialog.Content
           size="3"
           height="600px"
           width="450px"
-          aria-describedby="undefied"
+          aria-describedby="undefined"
           onClick={e => {
             e.stopPropagation();
           }}
@@ -35,7 +34,7 @@ export default function BrainDropDialog(props: {
             <Dialog.Description />
           </VisuallyHidden>
           <VisuallyHidden>
-            <Dialog.Title aria-describedby="undefied" >BrainDrop</Dialog.Title>
+            <Dialog.Title aria-describedby="undefined" >BrainDrop</Dialog.Title>
           </VisuallyHidden>
           <BrainDropEditor data={props.brainDropData} onUpdate={props.onUpdate} />
         </Dialog.Content>

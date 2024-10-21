@@ -7,7 +7,7 @@ interface GridProps {
 
 export default function BrainDropGrid({ children }: GridProps) {
   return (
-    <Grid columns="4" gap="5" maxWidth="1080px">
+    <Grid columns={{ initial: "1", md: "4" }} gap="5" maxWidth="1080px">
       {children}
     </Grid>
   );

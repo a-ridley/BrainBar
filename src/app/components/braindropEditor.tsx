@@ -1,8 +1,11 @@
-import { useState } from "react";
-import { Box, Button, Flex, Inset, Text, TextArea } from "@radix-ui/themes";
+import { useEffect, useState } from "react";
+import { Box, Button, Flex, IconButton, Inset, Text, TextArea } from "@radix-ui/themes";
 import { SingleImageUpload } from "./singleImageUpload";
 import { BraindropData } from "./braindropCard";
 import styles from "./brainDropEditor.module.scss"
+import { CheckIcon, Cross1Icon, Cross2Icon, Pencil1Icon } from "@radix-ui/react-icons";
+import { getImageByKey } from "../services/braindropFetchServices";
+import { BrainDropImage } from "../api/lib/s3Service";
 
 interface BrainDropEditorProps {
   data: BraindropData
@@ -32,9 +35,19 @@ const uploadBrainDropImage = async (textId: string, file: File) => {
 
 export default function BrainDropEditor(props: BrainDropEditorProps) {
   const [file, setFile] = useState<File | null>(null);
-  const [isEditing, setIsEditing] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
   const [ideaText, setIdeaText] = useState(props.data.ideaText);
   const [ideaDescription, setIdeaDescription] = useState(props.data.ideaDescription);
+
+  const [imgDataJson, setImgDataJson] = useState<BrainDropImage | undefined>(undefined);
+
+
+  useEffect(() => {
+    const imageKey = props.data.id.replace("text/", "image/");
+    getImageByKey(imageKey).then((data) => {
+      setImgDataJson(data)
+    })
+  }, []);
 
   return (
     <>
@@ -77,7 +90,18 @@ export default function BrainDropEditor(props: BrainDropEditorProps) {
             >
             </TextArea>
           </label>
-          <Button
+          <IconButton 
+            color="red"
+            style={{width: "100%"}}
+            onClick={() => {
+              setIsEditing(false);
+            }}
+          >
+            <Cross2Icon color="white"/>
+          </IconButton>
+          <IconButton
+            color="grass"
+            style={{width: "100%"}}
             onClick={async () => {
               if (file) {
                 await uploadBrainDropImage(props.data.id, file);
@@ -85,13 +109,30 @@ export default function BrainDropEditor(props: BrainDropEditorProps) {
               await uploadBrainDropText(props.data.id, ideaText, ideaDescription);
 
               props.onUpdate();
+              setIsEditing(false);
             }}
-          >Save</Button>
+          >
+            <CheckIcon />
+          </IconButton>
         </Flex>) : (
         <Box>
+          <IconButton
+            style={{
+              position: "absolute",
+              top: "0px",
+              right: "0px",
+              transform: "translateY(10px) translateX(-10px)"
+            }}
+            variant="ghost"
+            color="gray"
+            onClick={() => {setIsEditing(true)}}
+          >
+            <Pencil1Icon width="18" height="18" color="black">
+            </Pencil1Icon>
+          </IconButton>
           <Inset clip="padding-box" side="top" pb="current">
             <img
-              src="https://images.unsplash.com/photo-1617050318658-a9a3175e34cb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80"
+              src={imgDataJson?.url}
               alt="Bold typography"
               className={styles.img}
             />
