@@ -11,9 +11,9 @@ export const uploadBrainDropImage = async (textId: string, file: File) => {
   });
 }
 
-export const getImageByKey = async (key: string) => {
+export const getImages = async () => {
   const imageData = await fetch("/api/braindrop/image");
   const imgDataJson = await imageData.json() as BrainDropImage[];
 
-  return imgDataJson.find(image => image.key === key);
+  return imgDataJson;
 }

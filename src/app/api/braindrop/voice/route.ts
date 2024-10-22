@@ -1,4 +1,5 @@
-import { GetObjectCommand, ListObjectsV2Command, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+export const dynamic = 'force-dynamic';
+import { _Object, GetObjectCommand, ListObjectsV2Command, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { v4 as uuidv4 } from 'uuid';
 
@@ -19,10 +20,10 @@ export async function GET() {
 
   // Execute the command and retrieve all objects in the bucket
   let isTruncated = true;
-  let contents: any[] = [];
+  let contents: _Object[] = [];
   while (isTruncated) {
     const { Contents, IsTruncated, NextContinuationToken } = await S3.send(command);
-    contents = contents.concat(Contents);
+    contents = contents.concat(Contents!);
     isTruncated = !!IsTruncated;
 
     command.input.ContinuationToken = NextContinuationToken;
@@ -30,7 +31,7 @@ export async function GET() {
 
   // Create a signed URL for each object in the bucket
   const files = []
-  for (let content of contents) {
+  for (const content of contents) {
     // any empty files are most likely folders and not usable files so we skip.
     if (content.Size === 0) {
       continue;

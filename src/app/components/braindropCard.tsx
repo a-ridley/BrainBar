@@ -12,14 +12,13 @@ export interface BraindropData {
   date: Date
   ideaText: string
   ideaDescription: string
+  imgUrl: string
 }
 
 interface BrainDropCardProps {
   data: BraindropData,
   onUpdate: () => void
 }
-
-// This is where the edit button belongs because it doesn't matter if youre looking at front or back
 
 export default function BraindropCard(props: BrainDropCardProps) {
   const [isFlipped, setIsFlipped] = useState(false);
@@ -39,18 +38,18 @@ export default function BraindropCard(props: BrainDropCardProps) {
           <IconButton
             style={{
               position: "absolute",
-              top: "0px",
+              bottom: "0px",
               right: "0px",
-              transform: "translateY(10px) translateX(-10px)"
+              transform: "translateY(-10px) translateX(-10px)"
             }}
-            variant="ghost"
+            variant="soft"
             color="gray"
           >
             <SizeIcon width="18" height="18" color="black" />
           </IconButton>
         </BrainDropDialog>
       </div>
-      {isFlipped ? <BraindropBack ideaDescription={props.data.ideaDescription} textKey={props.data.id} /> : <BraindropFront ideaText={props.data.ideaText} />}
+      {isFlipped ? <BraindropFront ideaText={props.data.ideaText} /> :  <BraindropBack ideaDescription={props.data.ideaDescription} textKey={props.data.id} imgUrl={props.data.imgUrl} />}
     </Card>
   );
 }

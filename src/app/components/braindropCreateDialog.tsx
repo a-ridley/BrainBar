@@ -1,6 +1,5 @@
-import { Box, Button, Dialog, Flex, IconButton, Inset, Text, TextArea, TextField, VisuallyHidden } from "@radix-ui/themes";
-import styles from "./brainDropEditor.module.scss"
-import { useEffect, useState } from "react";
+import { Button, Dialog, Flex, IconButton, Text, TextArea, VisuallyHidden } from "@radix-ui/themes";
+import { useState } from "react";
 import { CardStackPlusIcon } from "@radix-ui/react-icons";
 import { SingleImageUpload } from "./singleImageUpload";
 import { uploadBrainDropImage } from "../services/braindropFetchServices";
@@ -59,22 +58,6 @@ export default function BrainDropCreate(props: BrainDropCreateProps) {
             />
             <label>
               <Text as="div" size="2" mb="1" weight="bold">
-                Idea
-              </Text>
-              <TextArea
-                size="2"
-                radius="full"
-                placeholder="Enter your rhyme/idea."
-                value={ideaText}
-                onChange={(e) => {
-                  const ideaText = e.target.value;
-                  setIdeaText(ideaText);
-                }}
-              >
-              </TextArea>
-            </label>
-            <label>
-              <Text as="div" size="2" mb="1" weight="bold">
                 Description
               </Text>
               <TextArea
@@ -85,6 +68,22 @@ export default function BrainDropCreate(props: BrainDropCreateProps) {
                 onChange={(e) => {
                   const ideaDescription = e.target.value;
                   setIdeaDescription(ideaDescription);
+                }}
+              >
+              </TextArea>
+            </label>
+            <label>
+              <Text as="div" size="2" mb="1" weight="bold">
+                Idea
+              </Text>
+              <TextArea
+                size="2"
+                radius="full"
+                placeholder="Enter your rhyme/idea."
+                value={ideaText}
+                onChange={(e) => {
+                  const ideaText = e.target.value;
+                  setIdeaText(ideaText);
                 }}
               >
               </TextArea>

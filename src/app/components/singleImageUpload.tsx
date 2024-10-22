@@ -38,7 +38,11 @@ export const SingleImageUpload = (props: SingleImageUploadProps) => {
         onClick={() => document.getElementById("fileInput")?.click()}
       >
         {imagePreviewUrl ? (
-          <img src={imagePreviewUrl} alt="Uploaded" style={{ width: "100%", height: "auto" }} />
+          <img
+            src={imagePreviewUrl}
+            alt="Uploaded"
+            style={{ width: "100%", height: "auto" }}
+          />
         ) : (
           <p>Drag & drop an image, or click to select</p>
         )}
@@ -49,7 +53,7 @@ export const SingleImageUpload = (props: SingleImageUploadProps) => {
         accept="image/*"
         style={{ display: "none" }}
         onChange={e => { handleImageUpload(e.target.files) }
-      }
+        }
       />
       {error && <p style={{ color: "red" }}>{error}</p>}
     </div>

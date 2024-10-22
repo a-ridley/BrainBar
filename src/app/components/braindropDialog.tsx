@@ -18,7 +18,7 @@ export default function BrainDropDialog(props: {
       <div onClick={() => { setIsOpen(true) }}>
         {props.children}
       </div>
-      <div onClick={(e) => {
+      <div onClick={() => {
         setIsOpen(false);
       }}>
         <Dialog.Content

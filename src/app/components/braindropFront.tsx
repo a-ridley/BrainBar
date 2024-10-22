@@ -1,5 +1,4 @@
 import { Box, Text } from "@radix-ui/themes";
-import styles from "./braindropFront.module.scss";
 
 type Props = {
   ideaText: string

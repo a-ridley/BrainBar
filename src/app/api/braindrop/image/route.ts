@@ -1,6 +1,4 @@
-import { GetObjectCommand, ListObjectsV2Command, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { v4 as uuidv4 } from 'uuid';
+export const dynamic = 'force-dynamic';
 import { ImageS3Service } from "../../lib/s3Service";
 
 const imageS3Service = new ImageS3Service();
@@ -22,10 +20,6 @@ export async function PUT(req: Request) {
   const formData = await req.formData();
   const id = formData.get("id")?.valueOf() as string | null;
   const imageFile = formData.get("imageFile")?.valueOf() as File | null;
-  // console.log({
-  //   id,
-  //   imageFile
-  // });
 
   if (id === null || imageFile === null) {
     console.error('no form id or image file');

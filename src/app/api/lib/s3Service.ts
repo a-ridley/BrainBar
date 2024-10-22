@@ -1,5 +1,4 @@
 import { ListObjectsV2Command, GetObjectCommand, S3Client, PutObjectCommand, _Object } from "@aws-sdk/client-s3";
-import { Upload } from "@aws-sdk/lib-storage";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { v4 as uuidv4 } from 'uuid';
 import { UploadImageData } from "../braindrop/image/route";
@@ -43,7 +42,7 @@ abstract class BaseS3Service<ExistingItemType, UploadItemType> {
 
     // Create a signed URL for each object in the bucket
     const files: ExistingItemType[] = []
-    for (let content of contents) {
+    for (const content of contents) {
       // any empty files are most likely folders and not usable files so we skip.
       if (content.Size === 0) {
         continue;

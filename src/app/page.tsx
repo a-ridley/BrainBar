@@ -7,6 +7,7 @@ import { BrainDropText } from "./api/lib/s3Service";
 import { useCallback, useEffect, useState } from "react";
 import BrainDropCreate from "./components/braindropCreateDialog";
 import { Box, Flex } from "@radix-ui/themes";
+import { getImages } from "./services/braindropFetchServices";
 
 const getTexts = async () => {
   const textData = await fetch("/api/braindrop/text");
@@ -17,13 +18,16 @@ const getTexts = async () => {
 export default function Home() {
   const [listOfBraindrops, setListOfBraindrops] = useState<BraindropData[]>([]);
   const updateListOfBraindrops = useCallback(() => {
-    getTexts().then((texts) => {
+    const getImagesPromise = getImages()
+    getTexts().then(async (texts) => {
+      const images = await getImagesPromise.catch(() => []); // if image fails, then use an empty array
       setListOfBraindrops(texts.map((braindrop) => {
         return {
           id: braindrop.key,
           date: braindrop.lastModified,
           ideaText: braindrop.ideaText,
           ideaDescription: braindrop.ideaDescription,
+          imgUrl: images.find(img => img.key === braindrop.key.replace('text/', 'image/'))?.url ?? ""
         }
       }))
     })

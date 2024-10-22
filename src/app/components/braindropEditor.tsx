@@ -1,11 +1,9 @@
-import { useEffect, useState } from "react";
-import { Box, Button, Flex, IconButton, Inset, Text, TextArea } from "@radix-ui/themes";
+import { useState } from "react";
+import { Box, Flex, IconButton, Inset, Text, TextArea } from "@radix-ui/themes";
 import { SingleImageUpload } from "./singleImageUpload";
 import { BraindropData } from "./braindropCard";
-import styles from "./brainDropEditor.module.scss"
-import { CheckIcon, Cross1Icon, Cross2Icon, Pencil1Icon } from "@radix-ui/react-icons";
-import { getImageByKey } from "../services/braindropFetchServices";
-import { BrainDropImage } from "../api/lib/s3Service";
+import styles from "./braindropEditor.module.scss"
+import { CheckIcon, Cross2Icon, Pencil1Icon } from "@radix-ui/react-icons";
 
 interface BrainDropEditorProps {
   data: BraindropData
@@ -14,7 +12,7 @@ interface BrainDropEditorProps {
 
 const uploadBrainDropText = async (textId: string, ideaText: string, ideaDescription: string) => {
   const braindropId = textId.split('/')[1].split('.')[0] // get id from text/{id}.json
-  const textData = await fetch("/api/braindrop/text", {
+  await fetch("/api/braindrop/text", {
     method: "POST", body: JSON.stringify({
       ideaText,
       ideaDescription,
@@ -39,16 +37,6 @@ export default function BrainDropEditor(props: BrainDropEditorProps) {
   const [ideaText, setIdeaText] = useState(props.data.ideaText);
   const [ideaDescription, setIdeaDescription] = useState(props.data.ideaDescription);
 
-  const [imgDataJson, setImgDataJson] = useState<BrainDropImage | undefined>(undefined);
-
-
-  useEffect(() => {
-    const imageKey = props.data.id.replace("text/", "image/");
-    getImageByKey(imageKey).then((data) => {
-      setImgDataJson(data)
-    })
-  }, []);
-
   return (
     <>
       {isEditing ? (
@@ -58,22 +46,6 @@ export default function BrainDropEditor(props: BrainDropEditorProps) {
               setFile(f);
             }}
           />
-          <label>
-            <Text as="div" size="2" mb="1" weight="bold">
-              Idea
-            </Text>
-            <TextArea
-              size="2"
-              radius="full"
-              placeholder="Enter your rhyme/idea."
-              value={ideaText}
-              onChange={(e) => {
-                const ideaText = e.target.value;
-                setIdeaText(ideaText);
-              }}
-            >
-            </TextArea>
-          </label>
           <label>
             <Text as="div" size="2" mb="1" weight="bold">
               Description
@@ -90,18 +62,34 @@ export default function BrainDropEditor(props: BrainDropEditorProps) {
             >
             </TextArea>
           </label>
-          <IconButton 
+          <label>
+            <Text as="div" size="2" mb="1" weight="bold">
+              Idea
+            </Text>
+            <TextArea
+              size="2"
+              radius="full"
+              placeholder="Enter your rhyme/idea."
+              value={ideaText}
+              onChange={(e) => {
+                const ideaText = e.target.value;
+                setIdeaText(ideaText);
+              }}
+            >
+            </TextArea>
+          </label>
+          <IconButton
             color="red"
-            style={{width: "100%"}}
+            style={{ width: "100%" }}
             onClick={() => {
               setIsEditing(false);
             }}
           >
-            <Cross2Icon color="white"/>
+            <Cross2Icon color="white" />
           </IconButton>
           <IconButton
             color="grass"
-            style={{width: "100%"}}
+            style={{ width: "100%" }}
             onClick={async () => {
               if (file) {
                 await uploadBrainDropImage(props.data.id, file);
@@ -116,34 +104,44 @@ export default function BrainDropEditor(props: BrainDropEditorProps) {
           </IconButton>
         </Flex>) : (
         <Box>
-          <IconButton
-            style={{
-              position: "absolute",
-              top: "0px",
-              right: "0px",
-              transform: "translateY(10px) translateX(-10px)"
-            }}
-            variant="ghost"
-            color="gray"
-            onClick={() => {setIsEditing(true)}}
-          >
-            <Pencil1Icon width="18" height="18" color="black">
-            </Pencil1Icon>
-          </IconButton>
           <Inset clip="padding-box" side="top" pb="current">
             <img
-              src={imgDataJson?.url}
+              src={props.data.imgUrl}
               alt="Bold typography"
               className={styles.img}
             />
           </Inset>
-          <Text as="p" size="3" align={"left"} mt="2">
-            {props.data.ideaText}
-          </Text>
 
-          <Text as="p" size="3" mt="3">
-            {props.data.ideaDescription}
-          </Text>
+          <Box position="relative">
+            <IconButton
+              style={{
+                position: "absolute",
+                top: "0px",
+                right: "0px",
+                transform: "translateY(-10px)"
+              }}
+              variant="ghost"
+              color="gray"
+              onClick={() => { setIsEditing(true) }}
+            >
+              <Pencil1Icon width="18" height="18" color="black">
+              </Pencil1Icon>
+            </IconButton>
+
+            <Text as="div" size="2" mt="2" weight="bold">
+              Description
+            </Text>
+            <Text as="p" size="3">
+              {props.data.ideaDescription}
+            </Text>
+
+            <Text as="div" size="2" mt="3" weight="bold">
+              Idea
+            </Text>
+            <Text as="p" size="3">
+              {props.data.ideaText}
+            </Text>
+          </Box>
         </Box>
       )
       }
